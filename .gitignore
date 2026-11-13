@@ -1,4 +1,5 @@
 build/
+build-*/
 dist/
 artifacts/
 style-preview/

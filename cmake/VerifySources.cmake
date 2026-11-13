@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+# Offline SHA256 verification implemented in CMake; no Python or network.
+file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/../sources.sha256" TKUR_HASH_LINES)
+foreach(line IN LISTS TKUR_HASH_LINES)
+  string(SUBSTRING "${line}" 0 64 expected)
+  string(SUBSTRING "${line}" 66 -1 relative)
+  if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/../${relative}")
+    message(FATAL_ERROR "Missing pinned source: ${relative}")
+  endif()
+  file(SHA256 "${CMAKE_CURRENT_LIST_DIR}/../${relative}" actual)
+  if(NOT actual STREQUAL expected)
+    message(FATAL_ERROR "Pinned source integrity mismatch: ${relative}")
+  endif()
+endforeach()
+message(STATUS "Verified pinned upstream and patched native source SHA256 manifest")
